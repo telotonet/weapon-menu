@@ -3,8 +3,13 @@
 
 Simple no combat weapon swap with combatQueue/bindings/notifications. 
 3.3.5 Only
+
 /weaponmenu [config|reset|lock|unlock|scale main/menu number|load top/bottom profilename]
-/weapon [config|reset|lock|unlock|scale main/menu number|load top/bottom profilename]
+
+/weapon [config|reset|lock|unlock|scale main/menu number|load top/bottom profilename] 
+
 or 
+
 /weaponmenu help
+
 /weapon help 
