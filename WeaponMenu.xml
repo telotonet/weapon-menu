@@ -1,0 +1,350 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+	<!-- Worn weapons template -->
+	<CheckButton name="WeaponMenuMainWeaponTemplate" inherits="ActionButtonTemplate,SecureActionButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp","RightButtonUp")
+			</OnLoad>
+			<PostClick>
+				WeaponMenu.MainWeapon_OnClick(self)
+			</PostClick>
+			<OnEnter>
+				if WeaponMenuOptions.MenuOnRight=="OFF" then
+					WeaponMenu.BuildMenu()
+				end
+				WeaponMenu.WornWeaponTooltip(self)
+			</OnEnter>
+			<OnLeave>
+				WeaponMenu.ClearTooltip()
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+
+	<!-- Menu weapons template -->
+	<CheckButton name="WeaponMenuMenuWeaponTemplate" inherits="ActionButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp","RightButtonUp")
+			</OnLoad>
+			<PostClick>
+				WeaponMenu.MenuWeapon_OnClick(self)
+			</PostClick>
+			<OnEnter>
+				WeaponMenu.MenuWeaponTooltip(self)
+			</OnEnter>
+			<OnLeave>
+				WeaponMenu.ClearTooltip()
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+
+	<!-- Cooldown time text template -->
+	<Frame name="WeaponMenuTimeTemplate" enableMouse="false" virtual="true">
+		<Size>
+			<AbsDimension x="36" y="12"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentTime" inherits="NumberFontNormal" justifyH="CENTER"/>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<!-- Combat queue inset template -->
+	<Frame name="WeaponMenuQueueTemplate" enableMouse="false" virtual="true">
+		<Size>
+			<AbsDimension x="18" y="18"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="-2" y="2"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentQueue"/>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<!-- MainFrame: Equipped Weapons -->
+
+	<Frame name="WeaponMenu_MainFrame" toplevel="true" frameStrata="BACKGROUND" enableMouse="true" movable="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="91" y="52" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="400" y="400"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+		</Backdrop>
+
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="WeaponMenu_MainDock_TOPRIGHT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.625" right="0.75" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="WeaponMenu_MainDock_TOPLEFT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.5" right="0.625" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="WeaponMenu_MainDock_BOTTOMLEFT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.75" right="0.875" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="WeaponMenu_MainDock_BOTTOMRIGHT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.875" right="1" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<CheckButton name="WeaponMenu_Weapon0" inherits="WeaponMenuMainWeaponTemplate" id="13">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="8" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<Frame parent="WeaponMenu_Weapon0" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Weapon0" inherits="WeaponMenuQueueTemplate"/>
+
+			<CheckButton name="WeaponMenu_Weapon1" inherits="WeaponMenuMainWeaponTemplate" id="14">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-8" y="8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<Frame parent="WeaponMenu_Weapon1" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Weapon1" inherits="WeaponMenuQueueTemplate"/>
+
+		</Frames>
+
+		<Scripts>
+			<OnLoad>
+				WeaponMenu.OnLoad(self)
+			</OnLoad>
+			<OnEvent>
+				WeaponMenu.OnEvent(self,event,...)
+			</OnEvent>
+			<OnMouseDown>
+				WeaponMenu.MainFrame_OnMouseDown(self)
+			</OnMouseDown>
+			<OnMouseUp>
+				WeaponMenu.MainFrame_OnMouseUp(self)
+			</OnMouseUp>
+			<OnHide>
+				WeaponMenu_MenuFrame:Hide()
+			</OnHide>
+			<OnShow>
+				WeaponMenu.OnShow()
+			</OnShow>
+			<OnHide>
+				WeaponMenu.OnHide()
+			</OnHide>
+		</Scripts>
+	</Frame>
+
+	<!-- MenuFrame: Bagged Weapons -->
+
+	<Frame name="WeaponMenu_MenuFrame" toplevel="true" frameStrata="HIGH" enableMouse="true" movable="true" parent="UIParent" hidden="true" clampedToScreen="true">
+		<Size>
+			<AbsDimension x="52" y="91" />
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="WeaponMenu_MainFrame" relativePoint="BOTTOMRIGHT"/>
+		</Anchors>
+
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+		</Backdrop>
+
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="WeaponMenu_MenuDock_TOPRIGHT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.625" right="0.75" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="WeaponMenu_MenuDock_TOPLEFT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.5" right="0.625" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="WeaponMenu_MenuDock_BOTTOMLEFT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.75" right="0.875" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="WeaponMenu_MenuDock_BOTTOMRIGHT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.875" right="1" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<CheckButton name="WeaponMenu_Menu1" inherits="WeaponMenuMenuWeaponTemplate" id="1"/>
+			<CheckButton name="WeaponMenu_Menu2" inherits="WeaponMenuMenuWeaponTemplate" id="2"/>
+			<CheckButton name="WeaponMenu_Menu3" inherits="WeaponMenuMenuWeaponTemplate" id="3"/>
+			<CheckButton name="WeaponMenu_Menu4" inherits="WeaponMenuMenuWeaponTemplate" id="4"/>
+			<CheckButton name="WeaponMenu_Menu5" inherits="WeaponMenuMenuWeaponTemplate" id="5"/>
+			<CheckButton name="WeaponMenu_Menu6" inherits="WeaponMenuMenuWeaponTemplate" id="6"/>
+			<CheckButton name="WeaponMenu_Menu7" inherits="WeaponMenuMenuWeaponTemplate" id="7"/>
+			<CheckButton name="WeaponMenu_Menu8" inherits="WeaponMenuMenuWeaponTemplate" id="8"/>
+			<CheckButton name="WeaponMenu_Menu9" inherits="WeaponMenuMenuWeaponTemplate" id="9"/>
+			<CheckButton name="WeaponMenu_Menu10" inherits="WeaponMenuMenuWeaponTemplate" id="10"/>
+			<CheckButton name="WeaponMenu_Menu11" inherits="WeaponMenuMenuWeaponTemplate" id="11"/>
+			<CheckButton name="WeaponMenu_Menu12" inherits="WeaponMenuMenuWeaponTemplate" id="12"/>
+			<CheckButton name="WeaponMenu_Menu13" inherits="WeaponMenuMenuWeaponTemplate" id="13"/>
+			<CheckButton name="WeaponMenu_Menu14" inherits="WeaponMenuMenuWeaponTemplate" id="14"/>
+			<CheckButton name="WeaponMenu_Menu15" inherits="WeaponMenuMenuWeaponTemplate" id="15"/>
+			<CheckButton name="WeaponMenu_Menu16" inherits="WeaponMenuMenuWeaponTemplate" id="16"/>
+			<CheckButton name="WeaponMenu_Menu17" inherits="WeaponMenuMenuWeaponTemplate" id="17"/>
+			<CheckButton name="WeaponMenu_Menu18" inherits="WeaponMenuMenuWeaponTemplate" id="18"/>
+			<CheckButton name="WeaponMenu_Menu19" inherits="WeaponMenuMenuWeaponTemplate" id="19"/>
+			<CheckButton name="WeaponMenu_Menu20" inherits="WeaponMenuMenuWeaponTemplate" id="20"/>
+			<CheckButton name="WeaponMenu_Menu21" inherits="WeaponMenuMenuWeaponTemplate" id="21"/>
+			<CheckButton name="WeaponMenu_Menu22" inherits="WeaponMenuMenuWeaponTemplate" id="22"/>
+			<CheckButton name="WeaponMenu_Menu23" inherits="WeaponMenuMenuWeaponTemplate" id="23"/>
+			<CheckButton name="WeaponMenu_Menu24" inherits="WeaponMenuMenuWeaponTemplate" id="24"/>
+			<CheckButton name="WeaponMenu_Menu25" inherits="WeaponMenuMenuWeaponTemplate" id="25"/>
+			<CheckButton name="WeaponMenu_Menu26" inherits="WeaponMenuMenuWeaponTemplate" id="26"/>
+			<CheckButton name="WeaponMenu_Menu27" inherits="WeaponMenuMenuWeaponTemplate" id="27"/>
+			<CheckButton name="WeaponMenu_Menu28" inherits="WeaponMenuMenuWeaponTemplate" id="28"/>
+			<CheckButton name="WeaponMenu_Menu29" inherits="WeaponMenuMenuWeaponTemplate" id="29"/>
+			<CheckButton name="WeaponMenu_Menu30" inherits="WeaponMenuMenuWeaponTemplate" id="30"/>
+
+			<Frame parent="WeaponMenu_Menu1" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu2" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu3" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu4" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu5" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu6" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu7" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu8" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu9" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu10" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu11" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu12" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu13" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu14" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu15" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu16" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu17" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu18" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu19" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu20" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu21" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu22" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu23" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu24" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu25" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu26" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu27" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu28" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu29" inherits="WeaponMenuTimeTemplate"/>
+			<Frame parent="WeaponMenu_Menu30" inherits="WeaponMenuTimeTemplate"/>
+
+		</Frames>
+
+		<Scripts>
+			<OnMouseDown>
+				WeaponMenu.MenuFrame_OnMouseDown(arg1)
+			</OnMouseDown>
+			<OnMouseUp>
+				WeaponMenu.MenuFrame_OnMouseUp(arg1)
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+
+	<!-- OnUpdate to process all timers -->
+	<Frame name="WeaponMenu_TimersFrame" hidden="true">
+		<Scripts>
+			<OnUpdate>
+				WeaponMenu.TimersFrame_OnUpdate(elapsed)
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<!-- Hidden GameTooltip for tooltip scanning -->
+	<GameTooltip name="WeaponMenu_TooltipScan" inherits="GameTooltipTemplate" hidden="true">
+		<Scripts>
+			<OnLoad>
+				self:SetOwner(WorldFrame,"ANCHOR_NONE")
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+</Ui>

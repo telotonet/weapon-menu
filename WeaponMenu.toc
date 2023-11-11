@@ -1,0 +1,12 @@
+## Interface: 30000
+## Title: WeaponMenu
+## Author: Telotonet
+## Notes: AddOn to manage weapons
+## SavedVariables: WeaponMenuOptions
+## SavedVariablesPerCharacter: WeaponMenuPerOptions, WeaponMenuQueue
+WeaponMenu.lua
+WeaponMenu.xml
+WeaponMenuOpt.lua
+WeaponMenuOpt.xml
+WeaponMenuQueue.lua
+WeaponMenuQueue.xml

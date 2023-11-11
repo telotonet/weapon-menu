@@ -1,0 +1,11 @@
+<Bindings>
+	<Binding name="Toggle WeaponMenu" header="WEAPONMENU">
+		WeaponMenu.ToggleFrame(WeaponMenuOptions.DisableToggle=="ON" and WeaponMenu_OptFrame or WeaponMenu_MainFrame)
+	</Binding>
+	<Binding name="CLICK WeaponMenu_Weapon0:LeftButton">
+		-- top weapon
+	</Binding>
+	<Binding name="CLICK WeaponMenu_Weapon1:LeftButton">
+		-- bottom weapon
+	</Binding>
+</Bindings>

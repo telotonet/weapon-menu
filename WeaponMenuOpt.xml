@@ -1,0 +1,565 @@
+<Ui>
+	<Button name="WeaponMenu_TabTemplate" inherits="UIPanelButtonGrayTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="96" y="28"/>
+		</Size>
+		<NormalFont inherits="GameFontHighlightSmall"/>
+		<DisabledFont inherits="GameFontDisableSmall"/>
+		<HighlightFont inherits="GameFontHighlightSmall"/>
+		<Scripts>
+			<OnClick>
+				WeaponMenu.Tab_OnClick(self:GetID())
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="WeaponMenu_SmallButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<HighlightTexture file="Interface\AddOns\WeaponMenu\Buttons" alphaMode="ADD">
+			<TexCoords left=".25" right=".375" top="0" bottom=".125"/>
+		</HighlightTexture>
+		<Scripts>
+			<OnClick>
+				WeaponMenu.SmallButton_OnClick(self)
+			</OnClick>
+			<OnEnter>
+				WeaponMenu.OnTooltip(self)
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+	<CheckButton name="WeaponMenu_CheckButtonTemplate" inherits="UICheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="24" y="24"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				WeaponMenu.CheckButton_OnClick(self)
+			</OnClick>
+			<OnEnter>
+				WeaponMenu.OnTooltip(self)
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+
+	<!-- Minimap button -->
+	<Button name="WeaponMenu_IconFrame" frameStrata="LOW" parent="Minimap" enableMouse="true" movable="true" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<NormalTexture file="Interface\AddOns\WeaponMenu\WeaponMenu-Icon-Up"/>
+		<PushedTexture file="Interface\AddOns\WeaponMenu\WeaponMenu-Icon-Down"/>
+		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp","RightButtonUp")
+				self:RegisterForDrag("LeftButton")
+			</OnLoad>
+			<OnEnter>
+				WeaponMenu.OnTooltip(self,"WeaponMenu",(WeaponMenuOptions.DisableToggle=="ON") and "Click: toggle options\nDrag: move icon" or "Left click: toggle weapons\nRight click: toggle options\nDrag: move icon")
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+			<OnDragStart>
+				self:LockHighlight()
+				WeaponMenu.StartTimer("DragMinimapButton")
+			</OnDragStart>
+			<OnDragStop>
+				WeaponMenu.StopTimer("DragMinimapButton")
+				self:UnlockHighlight()
+			</OnDragStop>
+			<OnClick>
+				WeaponMenu.MinimapButton_OnClick()
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<Frame name="WeaponMenu_OptFrame" parent="UIParent" movable="true" toplevel="true" clampedToScreen="true" hidden="true">
+		<Size x="300" y="326"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\ChatFrame\ChatFrameBackground">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="4" y="-4"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-4" y="4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Gradient orientation="VERTICAL">
+						<MinColor r="0.1" g="0.1" b="0.1" a=".5"/>
+						<MaxColor r=".25" g=".25" b=".25" a="1"/>
+					</Gradient>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="WeaponMenu_Title" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r=".55" g=".55" b=".55"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="WeaponMenu_CloseButton" inherits="WeaponMenu_SmallButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-6" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\WeaponMenu\Buttons">
+					<TexCoords left=".375" right=".5" top=".25" bottom=".375"/>
+				</NormalTexture>
+				<PushedTexture file="Interface\AddOns\WeaponMenu\Buttons">
+					<TexCoords left=".5" right=".625" top=".25" bottom=".375"/>
+				</PushedTexture>
+				<DisabledTexture file="Interface\AddOns\WeaponMenu\Buttons">
+					<TexCoords left=".625" right=".75" top=".25" bottom=".375"/>
+				</DisabledTexture>
+			</Button>
+			<Button name="WeaponMenu_LockButton" inherits="WeaponMenu_SmallButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="WeaponMenu_CloseButton" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\WeaponMenu\Buttons">
+					<TexCoords left=".75" right=".875" top=".125" bottom=".25"/>
+				</NormalTexture>
+				<PushedTexture file="Interface\AddOns\WeaponMenu\Buttons">
+					<TexCoords left=".875" right="1" top=".125" bottom=".25"/>
+				</PushedTexture>
+			</Button>
+
+			<Button name="WeaponMenu_Tab1" inherits="WeaponMenu_TabTemplate" text="Options" id="1">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-6" y="-22"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			<Frame name="WeaponMenu_SubOptFrame" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="8" y="-50"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-8" y="8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+					<EdgeSize>
+						<AbsValue val="16" />
+					</EdgeSize>
+				</Backdrop>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\ChatFrame\ChatFrameBackground">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="4" y="-4"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-4" y="4"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Gradient orientation="VERTICAL">
+								<MinColor r=".15" g=".15" b=".15" a="1"/>
+								<MaxColor r=".33" g=".33" b=".33" a="1"/>
+							</Gradient>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name="WeaponMenu_OptLocked" inherits="WeaponMenu_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="8" y="-8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="WeaponMenu_OptShowIcon" inherits="WeaponMenu_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptLocked" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="WeaponMenu_OptDisableToggle" inherits="WeaponMenu_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptShowIcon" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="16" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="WeaponMenu_OptSquareMinimap" inherits="WeaponMenu_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptDisableToggle" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="WeaponMenu_OptCooldownCount" inherits="WeaponMenu_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptSquareMinimap" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-16" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="WeaponMenu_OptLargeCooldown" inherits="WeaponMenu_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptCooldownCount" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="16" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="WeaponMenu_OptShowTooltips" inherits="WeaponMenu_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptLargeCooldown" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-16" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="WeaponMenu_OptTooltipFollow" inherits="WeaponMenu_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptShowTooltips" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="16" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="WeaponMenu_OptTinyTooltips" inherits="WeaponMenu_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptTooltipFollow" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="WeaponMenu_OptShowHotKeys" inherits="WeaponMenu_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptTinyTooltips" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-16" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="WeaponMenu_OptStopOnSwap" inherits="WeaponMenu_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptShowHotKeys" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="WeaponMenu_OptRedRange" inherits="WeaponMenu_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptStopOnSwap" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<CheckButton name="WeaponMenu_OptKeepDocked" inherits="WeaponMenu_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="-8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="WeaponMenu_OptKeepOpen" inherits="WeaponMenu_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptKeepDocked" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="WeaponMenu_OptMenuOnShift" inherits="WeaponMenu_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptKeepOpen" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="WeaponMenu_OptMenuOnRight" inherits="WeaponMenu_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptMenuOnShift" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="WeaponMenu_OptNotify" inherits="WeaponMenu_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptMenuOnRight" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="WeaponMenu_OptNotifyThirty" inherits="WeaponMenu_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptNotify" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="WeaponMenu_OptNotifyChatAlso" inherits="WeaponMenu_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptNotifyThirty" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="WeaponMenu_OptSetColumns" inherits="WeaponMenu_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptNotifyChatAlso" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<Slider name="WeaponMenu_OptColumnsSlider" orientation="HORIZONTAL" enableMouse="true" minValue="1" maxValue="30" defaultValue="4" valueStep="1">
+						<Size>
+							<AbsDimension x="104" y="17"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptSetColumns" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="16" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<HitRectInsets>
+							<AbsInset left="0" right="0" top="-5" bottom="-5"/>
+						</HitRectInsets>
+						<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+							<EdgeSize>
+								<AbsValue val="8"/>
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="8"/>
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="3" right="3" top="6" bottom="6"/>
+							</BackgroundInsets>
+						</Backdrop>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="WeaponMenu_OptColumnsSliderText" inherits="GameFontHighlightSmall" text="5 weapons">
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="WeaponMenu_OptSetColumnsText" relativePoint="RIGHT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnValueChanged>
+								WeaponMenu.OptColumnsSlider_OnValueChanged(self)
+							</OnValueChanged>
+						</Scripts>
+						<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+						</ThumbTexture>
+					</Slider>
+
+					<Slider name="WeaponMenu_OptMainScaleSlider" orientation="HORIZONTAL" enableMouse="true" minValue="0.2" maxValue="2.5" defaultValue="1.0" valueStep="0.05">
+						<Size>
+							<AbsDimension x="104" y="17"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptSetColumns" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="16" y="-28"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<HitRectInsets>
+							<AbsInset left="0" right="0" top="-5" bottom="-5"/>
+						</HitRectInsets>
+						<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+							<EdgeSize>
+								<AbsValue val="8"/>
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="8"/>
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="3" right="3" top="6" bottom="6"/>
+							</BackgroundInsets>
+						</Backdrop>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="WeaponMenu_OptMainScaleSliderText" inherits="GameFontHighlightSmall" text="Main Scale: 1.0">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptSetColumnsText" relativePoint="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="0" y="-24"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnValueChanged>
+								WeaponMenu.OptMainScaleSlider_OnValueChanged(self)
+							</OnValueChanged>
+						</Scripts>
+						<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+						</ThumbTexture>
+					</Slider>
+
+					<Slider name="WeaponMenu_OptMenuScaleSlider" orientation="HORIZONTAL" enableMouse="true" minValue="0.2" maxValue="2.5" defaultValue="1.0" valueStep="0.05">
+						<Size>
+							<AbsDimension x="104" y="17"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptMainScaleSlider" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-16"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<HitRectInsets>
+							<AbsInset left="0" right="0" top="-5" bottom="-5"/>
+						</HitRectInsets>
+						<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+							<EdgeSize>
+								<AbsValue val="8"/>
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="8"/>
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="3" right="3" top="6" bottom="6"/>
+							</BackgroundInsets>
+						</Backdrop>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="WeaponMenu_OptMenuScaleSliderText" inherits="GameFontHighlightSmall" text="Menu Scale: 1.0">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="WeaponMenu_OptMainScaleSliderText" relativePoint="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="0" y="-22"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnValueChanged>
+								WeaponMenu.OptMenuScaleSlider_OnValueChanged(self)
+							</OnValueChanged>
+						</Scripts>
+						<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+						</ThumbTexture>
+					</Slider>
+
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnMouseDown>
+				self:StartMoving()
+			</OnMouseDown>
+			<OnMouseUp>
+				self:StopMovingOrSizing()
+			</OnMouseUp>
+			<OnShow>
+				WeaponMenu.OptFrame_OnShow()
+			</OnShow>
+		</Scripts>
+	</Frame>
+</Ui>
